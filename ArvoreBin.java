@@ -1,9 +1,20 @@
+
 package tree;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 
 public class ArvoreBin {
 	private Nodo raiz;
+	
+	
 
-    public ArvoreBin() {
+    public Nodo getRaiz() {
+		return raiz;
+	}
+
+	public ArvoreBin() {
         raiz = null;
     }
 	
@@ -94,116 +105,43 @@ public class ArvoreBin {
 			}
     }
 
-    public boolean remover(int valor) {
+    public Nodo remover(Nodo raiz, int valor) {
+    	// Se a raiz for nula, return raiz
+    	if (raiz == null)
+            return raiz;
+    	
+    	//valor a ser removido for menor que o valor da raiz
+        if (valor < raiz.getValor())
+            raiz.setEsq(remover(raiz.getEsq(), valor));
         
-    	//Buscar elemento da arvore para ser removido
-    			Nodo atual = this.raiz; 
-    			Nodo paiAtual = null; 
-    			while(atual != null) { // chegou há um valor que não existe na árvore
-    				if (atual != null) {
-    				    paiAtual = atual; // Movido para dentro do bloco if
-    				    if (atual.getValor() == valor) {
-    				        break;
-    				    } else if (atual.getValor() < paiAtual.getValor()) {
-    				        paiAtual = atual;
-    				        atual = atual.getEsq();
-    				    } else {
-    				        paiAtual = atual;
-    				        atual = atual.getDir();
-    				    }
-    				}
+        //valor a ser removido for maior que o valor da raiz
+        else if (valor > raiz.getValor())
+            raiz.setDir(remover(raiz.getDir(), valor));
+        
+       
+        else {
+        	// Se o nó a ser removido é uma folha
+        	if (raiz.getEsq() == null && raiz.getDir() == null) {
+                raiz = null;
+            } 
+        	
+        	// Se o nó tem apenas um filho à direita
+        	else if (raiz.getEsq() == null)
+                raiz = raiz.getDir();
+        	
+        	// Se o nó tem apenas um filho à esquerda
+            else if (raiz.getDir() == null)
+                raiz = raiz.getEsq();
+        	
+        	// Se o nó tem dois filhos
+            else {
+                raiz.setValor(minValue(raiz.getDir()));
+                raiz.setDir(remover(raiz.getDir(), raiz.getValor()));
+            }
+        }
 
-    			}
-    			
-    			//verificar se existe o elemento
-    			if(atual != null) {
-    				
-    					
-    				/*CASO: TEM 2 FILHOS OU SÓ NA DIREITA*/
-    				if(atual.getDir() != null) {
-    					
-    						Nodo substituto = atual.getDir();
-    		                Nodo paiSubstituto = atual;
-    		                while(substituto.getEsq() != null){
-    		                    paiSubstituto = substituto;
-    		                    substituto = substituto.getEsq();
-    		                }
-    		                substituto.setEsq(atual.getEsq());
-    		                if (paiAtual != null){
-    		                    if (atual.getValor()< paiAtual.getValor()){ //atual < paiAtual
-    		                        paiAtual.setEsq(substituto);
-    		                    }else{
-    		                        paiAtual.setDir(substituto);
-    		                    }
-    		                }else{ //se não tem paiAtual, então é a raiz
-    		                    this.raiz = substituto;
-    		                }
-    					
-    					//remover elemento
-    					if(atual.getValor()< paiAtual.getValor()) {// substituto < paiSubstituto
-    						paiSubstituto.setEsq(null);
-    					}else{
-    						paiSubstituto.setDir(null);
-    					}
-    				
-    				}
-    				
-    				
-    					/*CASO tem filho só a esquerda*/ 
-    				
-    				else if(atual.getEsq() != null) {
-    					
-    					Nodo substituto = atual.getEsq(); 
-    					Nodo paiSubstituto = atual;
-    					
-    					while(substituto.getDir() != null) {
-    						paiSubstituto = substituto;
-    						substituto = substituto.getDir();	
-    					}
-    					
-    					//substituir pelo atual
-    					
-    					if (paiAtual != null){
-    	                    if (atual.getValor()< paiAtual.getValor()){ //atual < paiAtual
-    	                        paiAtual.setEsq(substituto);
-    	                    }else{
-    	                        paiAtual.setDir(substituto);
-    	                    }
-    	                }else{ //se for a raiz
-    	                    this.raiz = substituto;
-    	                }
-    					
-    					
-    					//remover elemento
-    					if(atual.getValor() > paiAtual.getValor()) {// substituto < paiSubstituto
-    						paiSubstituto.setEsq(null);
-    					}else{
-    						paiSubstituto.setDir(null);
-    					}
-    					
-    				}
-    				
-    				
-    				/*CASO NÃO TEM FILHO*/
-    				
-    				else {//não tem filho 
-    					if (paiAtual != null){
-    	                    if (atual.getValor()< paiAtual.getValor()){ //atual < paiAtual
-    	                        paiAtual.setEsq(null);
-    	                    }else{
-    	                        paiAtual.setDir(null);
-    	                    }
-    	                }else{ //é a raiz
-    	                    this.raiz = null;
-    	                }
-    	            }
-
-    	            return true;
-    	        }else{
-    	            return false;
-    	        }
+        return raiz;
     }
-
     
     public Nodo buscar( int valor) {
         Nodo atual = raiz;
@@ -220,24 +158,44 @@ public class ArvoreBin {
     }
 
 
-    public void  buscarMin() {
-        
-    	Nodo atual = raiz; 
-    	while(atual.getEsq() != null) {
-    		atual = atual.getEsq();    	
-    	}
-    	
-    	System.out.println( atual.valor);
+    public  int minValue(Nodo no) {
+        int minValor = no.valor;
+        while (no.getEsq() != null) {
+            minValor = no.getEsq().valor;
+            no = no.getEsq();
+        }
+        return minValor;
     }
     	
     	
-/*
+
     public void gerarArqDot(String filename) {
-        // Implementação aqui
+    	try (BufferedWriter out = new BufferedWriter(new FileWriter(filename))) {
+            out.write("digraph ArvoreBin {\n");
+            escreverPreOrdemDot(raiz, out);
+            out.write("}");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+    
 
     private void escreverPreOrdemDot(Nodo raiz, BufferedWriter out) throws IOException {
-        // Implementação aqui
+    	if (raiz != null) {
+            out.write(raiz.getValor() + ";\n"); // Escreve o valor do nó
+            if (raiz.getEsq() != null) {
+                out.write(raiz.getValor() + " -> " + raiz.getEsq().getValor() + " [label=\"esquerda\"];\n");
+            }
+            if (raiz.getDir() != null) {
+                out.write(raiz.getValor() + " -> " + raiz.getDir().getValor() + " [label=\"direita\"];\n");
+            }
+            escreverPreOrdemDot(raiz.getEsq(), out); // Visita recursivamente o filho esquerdo
+            escreverPreOrdemDot(raiz.getDir(), out); // Visita recursivamente o filho direito
+        }
     }
-*/
+    
+    
+    
+    
 }
+    
