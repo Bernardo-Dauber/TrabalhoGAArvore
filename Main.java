@@ -16,16 +16,31 @@ public class Main {
         arvore.inserir(12);
         arvore.inserir(17);
 
-        // Realize o caminhamento pré-ordem para exibir os valores da árvore
-        System.out.println("Caminhamento pré-ordem:");
-        arvore.preOrdem();
-
-        String caminhoDoArquivo = "D:\\Graphviz\\bin\\dotFiles\\ArvoreBinGerado.dot";
-
-        // Gere o arquivo DOT com o caminhamento pré-ordem da árvore na pasta especificada
+        
+        String caminhoDoArquivo = "D:\\Graphviz\\bin\\dotFiles\\ArvoreBinGeradoInserir.dot";
         arvore.gerarArqDot(caminhoDoArquivo);
-
-        // Exiba uma mensagem informando que o arquivo DOT foi gerado	
+    
+        String caminhoDoArquivo2 = "D:\\Graphviz\\bin\\dotFiles\\ArvoreBinGeradoRemoverRaiz.dot";
+        arvore.remover(arvore.getRaiz(), 10);
+        arvore.gerarArqDot(caminhoDoArquivo2);
+        
+        String caminhoDoArquivo4 = "D:\\Graphviz\\bin\\dotFiles\\ArvoreBinGeradoRemoverPai.dot";
+        arvore.remover(arvore.getRaiz(), 5);
+        arvore.gerarArqDot(caminhoDoArquivo4);
+        
+        String caminhoDoArquivo3 = "D:\\Graphviz\\bin\\dotFiles\\ArvoreBinGeradoInserirNovamente.dot";
+        arvore.inserir(2);
+        arvore.inserir(50);
+        arvore.gerarArqDot(caminhoDoArquivo3);
+        
+        
+        String caminhoDoArquivo5 = "D:\\Graphviz\\bin\\dotFiles\\ArvoreBinGeradoRemoverNodos.dot";
+        arvore.remover(arvore.getRaiz(), 17);
+        arvore.remover(arvore.getRaiz(), 7);
+        arvore.gerarArqDot(caminhoDoArquivo5);
+        
+        
+        
         System.out.println("Arquivo DOT gerado com sucesso: " + caminhoDoArquivo);
     }
 

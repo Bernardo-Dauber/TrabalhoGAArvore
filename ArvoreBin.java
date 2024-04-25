@@ -23,49 +23,37 @@ public class ArvoreBin {
         raiz = inserir1(valor);
     }
 	*/
-    public Nodo inserir(int valor) {
-    		Nodo  novoNodo = new Nodo(valor); 
-    		
-    		
+	public Nodo inserir(int valor) {
+	    Nodo novoNodo = new Nodo(valor);
 
-    	    // Arvore esta vazia
-    	    if (raiz == null) {
-    	        this.raiz = novoNodo;
-    	        return novoNodo; // Retorna o novo nó se a árvore estiver vazia
-    	    } else {
-    	        Nodo atual = this.raiz;
+	    if (raiz == null) {
+	        raiz = novoNodo;
+	        return novoNodo;
+	    } else {
+	        Nodo atual = raiz;
+	        Nodo pai;
 
-    	        while (true) {
+	        while (true) {
+	            pai = atual;
 
-    	            // verificar se já o valor existente
-    	            if (novoNodo.getValor() == atual.getValor()) {
-    	                return null; // Retorna null se o valor já existir na árvore
-    	            }
-
-    	            // comparar novo Nodo menor atual, se for, vai para esquerda
-    	            if (novoNodo.getValor() < atual.getValor()) {
-
-    	                if (atual.getEsq() == null) {
-    	                    atual.setEsq(novoNodo);
-    	                    return novoNodo; // Retorna o novo nó se for inserido à esquerda
-    	                } else {
-    	                    atual = atual.getEsq();
-    	                }
-
-    	            } else {
-    	                if (atual.getDir() == null) {
-    	                    atual.setDir(novoNodo);
-    	                    return novoNodo; // Retorna o novo nó se for inserido à direita
-    	                } else {
-    	                    atual = atual.getDir();
-    	                }
-    	            }
-    	        }
-    	    }
-    		
-    	
-
-    }
+	            if (valor < atual.getValor()) {
+	                atual = atual.getEsq();
+	                if (atual == null) {
+	                    pai.setEsq(novoNodo);
+	                    return novoNodo;
+	                }
+	            } else if (valor > atual.getValor()) {
+	                atual = atual.getDir();
+	                if (atual == null) {
+	                    pai.setDir(novoNodo);
+	                    return novoNodo;
+	                }
+	            } else {
+	                return null; // Valor já existe na árvore
+	            }
+	        }
+	    }
+	}
     
     
     public void preOrdem() {
@@ -179,21 +167,45 @@ public class ArvoreBin {
         }
     }
     
+    public void gerarArqDot2(String filename) {
+    	try (BufferedWriter out = new BufferedWriter(new FileWriter(filename))) {
+            out.write("digraph ArvoreBin {\n");
+            escreverEmOrdemDot(raiz, out);
+            out.write("}");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void escreverPreOrdemDot(Nodo raiz, BufferedWriter out) throws IOException {
     	if (raiz != null) {
             out.write(raiz.getValor() + ";\n"); // Escreve o valor do nó
             if (raiz.getEsq() != null) {
-                out.write(raiz.getValor() + " -> " + raiz.getEsq().getValor() + " [label=\"esquerda\"];\n");
+                out.write(raiz.getValor() + " -> " + raiz.getEsq().getValor() + " [label=\"\"];\n");
             }
             if (raiz.getDir() != null) {
-                out.write(raiz.getValor() + " -> " + raiz.getDir().getValor() + " [label=\"direita\"];\n");
+                out.write(raiz.getValor() + " -> " + raiz.getDir().getValor() + " [label=\"\"];\n");
             }
             escreverPreOrdemDot(raiz.getEsq(), out); // Visita recursivamente o filho esquerdo
             escreverPreOrdemDot(raiz.getDir(), out); // Visita recursivamente o filho direito
         }
     }
     
+    
+    private void escreverEmOrdemDot(Nodo raiz, BufferedWriter out) throws IOException {
+        if (raiz != null) {
+            escreverEmOrdemDot(raiz.getEsq(), out); // Visita recursivamente o filho esquerdo
+            out.write(raiz.getValor() + ";\n"); // Escreve o valor do nó
+            if (raiz.getEsq() != null) {
+                out.write(raiz.getValor() + " -> " + raiz.getEsq().getValor() + " [label=\"\"];\n");
+            }
+            if (raiz.getDir() != null) {
+                out.write(raiz.getValor() + " -> " + raiz.getDir().getValor() + " [label=\"\"];\n");
+            }
+            escreverEmOrdemDot(raiz.getDir(), out); // Visita recursivamente o filho direito
+        }
+    }
+
     
     
     
